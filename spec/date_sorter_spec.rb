@@ -1,22 +1,32 @@
+require 'my_program'
 require 'date_sorter'
 
 RSpec.describe DateSorter do
-  it '#sort_by_date(data) returns an array of data sorted by date' do
-    data = [
-      ["05/12/2014 Sat", nil, "ELI'S", "Michael J Vezzani", "XXXX-XXXX-61017", nil, nil, "31.29"],
-      ["05/22/2014 Sat", nil, "Kroger", "Michael J Vezzani", "XXXX-XXXX-61017", nil, nil, "100.01"],
-      ["05/03/2014 Sat", nil, "TARGET, 'Michael J Vezzani", "XXXX-XXXX-61017", nil, nil, "130.27"],
-      ["05/08/2014 Sat", nil, "Sleepy Bee", "Michael J Vezzani", "XXXX-XXXX-61017", nil, nil, "20.25"],
-      ["05/18/2014 Sat", nil, "Fresh Thyme", "Michael J Vezzani", "XXXX-XXXX-61017", nil, nil, "88.98"]
-    ]
-    actual = Program.sort_by_date(data)
-    expected = [
-      ["05/03/2014 Sat", nil, "TARGET, 'Michael J Vezzani", "XXXX-XXXX-61017", nil, nil, "130.27"],
-      ["05/08/2014 Sat", nil, "Sleepy Bee", "Michael J Vezzani", "XXXX-XXXX-61017", nil, nil, "20.25"],
-      ["05/12/2014 Sat", nil, "ELI'S", "Michael J Vezzani", "XXXX-XXXX-61017", nil, nil, "31.29"],
-      ["05/18/2014 Sat", nil, "Fresh Thyme", "Michael J Vezzani", "XXXX-XXXX-61017", nil, nil, "88.98"],
-      ["05/22/2014 Sat", nil, "Kroger", "Michael J Vezzani", "XXXX-XXXX-61017", nil, nil, "100.01"]
-    ]
-    expect(actual).to eq expected
+  describe "#sort_by_date(data)" do
+    it 'for amex returns an array of data sorted by date' do
+      @program = Program.new
+      data = [
+        Expense.new({date: '06/05/2016 Sun', amount: '31.29', category: '', type: 'amex', location: 'ELIS'}),
+        Expense.new({date: '06/04/2016 Sat', amount: '10.01', category: '', type: 'amex', location: 'Kroger'}),
+        Expense.new({date: '06/03/2016 Fri', amount: '13.27', category: '', type: 'amex', location: 'Target'}),
+        Expense.new({date: '06/02/2016 Thu', amount: '20.25', category: '', type: 'amex', location: 'Sleepy Bee'}),
+        Expense.new({date: '06/01/2016 Wed', amount: '88.98', category: '', type: 'amex', location: 'Fresh Thyme'})
+      ]
+      actual = @program.sort_by_date(data)
+      expect(actual.first.location).to eq "Fresh Thyme"
+    end
+
+    it 'for usaa returns an array of data sorted by date' do
+      @program = Program.new
+      data = [
+        Expense.new({date: '06/05/2016', amount: '31.29', category: '', type: 'usaa', location: 'ELIS'}),
+        Expense.new({date: '06/04/2016', amount: '10.01', category: '', type: 'usaa', location: 'Kroger'}),
+        Expense.new({date: '06/03/2016', amount: '13.27', category: '', type: 'usaa', location: 'Target'}),
+        Expense.new({date: '06/02/2016', amount: '20.25', category: '', type: 'usaa', location: 'Sleepy Bee'}),
+        Expense.new({date: '06/01/2016', amount: '88.98', category: '', type: 'usaa', location: 'Fresh Thyme'})
+      ]
+      actual = @program.sort_by_date(data)
+      expect(actual.first.location).to eq "Fresh Thyme"
+    end
   end
 end

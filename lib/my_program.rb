@@ -1,12 +1,25 @@
 require_relative 'date_sorter'
-require_relative 'field_remover'
 require_relative 'categorizer'
+require_relative 'expense'
 require 'csv'
 require 'pry'
 
 class Program
   def initialize
     @categorizer = Categorizer.new
+    @file_path = ARGV[0]
+    @type = ARGV[1]
+    @file_name = ARGV[2]
+  end
+
+  def create_expenses(data, type)
+    if type == 'usaa'
+      data.map{|x| Expense.new({date: x[0], amount: x[4], category: '', location: x[2], type: 'usaa'})}
+    elsif type == 'amex'
+      data.map{|x| Expense.new({date: x[0], amount: x[7], category: '', location: x[2], type: 'usaa'})}
+    else
+      puts 'Unrecognized account type'
+    end
   end
 
   def open_file(file_path)
@@ -17,14 +30,10 @@ class Program
     DateSorter.sort_by_date data
   end
 
-  def remove_data_fields(data)
-    FieldRemover.remove_data_fields data
-  end
-
   def prompt_category(expense)
-    puts "#{expense[3]} category?"
+    puts "#{expense.location} category?"
     category = STDIN.gets.chomp!
-    expense[2] = category
+    expense.category = category
     puts "Would you like this expense to be automatically categorized in the future? If so please enter the business name. ('n' to skip)"
     while business_name = STDIN.gets.chomp!
       case business_name
@@ -38,24 +47,24 @@ class Program
   end
 
   def save_categorized_expenses data
-    CSV.open("./newly_categorized_expenses.csv", "wb") do |csv|
+    CSV.open("./#{@file_name}", "wb") do |csv|
       data.each do |exp|
-        csv << exp
+        csv << [exp.date, exp.amount, exp.category, exp.location]
       end
     end
   end
 
   def run
-    puts "What file do you want to open?"
-    file_path = gets.chomp!
-    data = remove_data_fields(sort_by_date(open_file(file_path)))
+    data = open_file(@file_path)
+    expenses = create_expenses(data, @type)
+    sorted_expenses = sort_by_date(expenses)
 
-    data.each do |x|
-      @categorizer.includes?(x[3]) ? @categorizer.auto_categorize(x) : prompt_category(x)
+    sorted_expenses.each do |expense|
+      @categorizer.includes?(expense.location) ? @categorizer.auto_categorize(expense) : prompt_category(expense)
     end
-    
+
     @categorizer.save_business_categories
-    save_categorized_expenses data
+    save_categorized_expenses sorted_expenses
   end
 
 end

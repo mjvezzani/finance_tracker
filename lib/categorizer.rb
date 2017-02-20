@@ -17,8 +17,8 @@ class Categorizer
   end
 
   def auto_categorize expense
-    business_category = @business_categories.select{|x| expense[3].include?(x[0])}.flatten
-    expense[2] = business_category[1]
+    business_category = @business_categories.select{|x| expense.location.include?(x[0])}.flatten
+    expense.category = business_category[1]
   end
 
   def save_business_categories

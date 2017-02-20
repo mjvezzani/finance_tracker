@@ -15,8 +15,8 @@ RSpec.describe Categorizer do
   end
 
   it 'automatically categorizes expenses that have been registered with the existing business/category data set' do
-    expense = ["KROGER", nil, "19.23"]
+    expense = Expense.new({date: '12/12/12', amount: '12.19', category: '', location: 'KROGER', type: 'amex'})
     @categorizer.auto_categorize expense
-    expect(expense[1]).to eq "F"
+    expect(expense.category).to eq "F"
   end
 end
