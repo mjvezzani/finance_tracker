@@ -1,5 +1,3 @@
-require 'pry'
-
 class DateSorter
   def self.sort_by_date(data)
     data.first.type == 'usaa' ? self.sort_usaa(data) : self.sort_amex(data)

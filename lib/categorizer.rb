@@ -1,5 +1,4 @@
 require 'csv'
-require 'pry'
 
 class Categorizer
   attr_reader :business_categories
